@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="StatusBarInsetFrameLayout">
+        <!-- default -->
+    </declare-styleable>
+
+    <declare-styleable name="BottomNavigationBarInsetFrameLayout">
+        <!-- default -->
+    </declare-styleable>
+
+</resources>
