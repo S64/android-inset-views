@@ -7,6 +7,8 @@ This is contains below components:
 - StatusBarInsetFrameLayout
 - BottomNavigationBarInsetFrameLayout
 
+Japanese details is available here: [blog.s64.jp](http://blog.s64.jp/entry/2017/07/21/Android%E3%81%AEStatusBar%2C_NavigationBar%E3%81%AE%E9%AB%98%E3%81%95%E3%82%92%E6%8C%81%E3%81%A4View%E7%BE%A4_%22android-inset-views%22_%E3%82%92OSS%E3%81%A8%E3%81%97%E3%81%A6%E5%85%AC%E9%96%8B%E3%81%97%E3%81%BE)
+
 ## Usages
 
 Add following lines to your buildscripts.
