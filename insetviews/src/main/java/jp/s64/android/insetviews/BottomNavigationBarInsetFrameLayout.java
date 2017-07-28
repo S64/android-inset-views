@@ -25,11 +25,10 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.WindowInsetsCompat;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-/**
- * Created by shuma on 2017/07/21.
- */
+import jp.s64.android.insetviews.util.NavigationBarUtils;
 
 public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
 
@@ -77,18 +76,21 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
 
     @Nullable
     private Integer getBottomNavigationHeightFromResource() {
-        Integer resId = null;
+        Integer resId;
         int orientation = getResources().getConfiguration().orientation;
 
-        if (isMovableNavigationBar() && orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        NavigationBarUtils.NavigationBarPosition position = NavigationBarUtils.getNavigationBarPosition(
+                getResources().getConfiguration(),
+                (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)
+        );
+
+        if (NavigationBarUtils.isHorizontalPosition(position)) {
             return 0;
         }
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             resId = getResources().getIdentifier(RES_NAVIGATION_BAR_HEIGHT_NAME_LANDSCAPE, RES_NAVIGATION_BAR_HEIGHT_DEFTYPE, RES_NAVIGATION_BAR_HEIGHT_DEFPACKAGE);
-        }
-
-        if (resId == null) {
+        } else {
             resId = getResources().getIdentifier(RES_NAVIGATION_BAR_HEIGHT_NAME, RES_NAVIGATION_BAR_HEIGHT_DEFTYPE, RES_NAVIGATION_BAR_HEIGHT_DEFPACKAGE);
         }
 
@@ -99,10 +101,6 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         navigationBarHeight = null;
-    }
-
-    private boolean isMovableNavigationBar() {
-        return getResources().getConfiguration().smallestScreenWidthDp < 600;
     }
 
 }
