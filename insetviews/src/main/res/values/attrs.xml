@@ -17,4 +17,8 @@
         <!-- default -->
     </declare-styleable>
 
+    <declare-styleable name="HorizontalPositionNavigationBarInsetFrameLayout">
+        <!-- default -->
+    </declare-styleable>
+
 </resources>
