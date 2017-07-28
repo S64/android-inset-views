@@ -13,4 +13,8 @@
         <!-- default -->
     </declare-styleable>
 
+    <declare-styleable name="RightNavigationBarInsetFrameLayout">
+        <!-- default -->
+    </declare-styleable>
+
 </resources>
