@@ -9,4 +9,8 @@
         <!-- default -->
     </declare-styleable>
 
+    <declare-styleable name="LeftNavigationBarInsetFrameLayout">
+        <!-- default -->
+    </declare-styleable>
+
 </resources>
