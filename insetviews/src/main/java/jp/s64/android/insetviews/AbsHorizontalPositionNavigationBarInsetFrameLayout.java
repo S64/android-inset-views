@@ -75,7 +75,7 @@ public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends
 
     @Nullable
     private Integer getHorizontalPositionNavigationWidthFromResource() {
-        Integer resId;
+        int resId;
 
         NavigationBarUtils.NavigationBarPosition position = NavigationBarUtils.getNavigationBarPosition(
                 getResources().getConfiguration(),
@@ -88,7 +88,7 @@ public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends
             resId = getResources().getIdentifier(RES_NAVIGATION_BAR_WIDTH_NAME, RES_NAVIGATION_BAR_HEIGHT_DEFTYPE, RES_NAVIGATION_BAR_HEIGHT_DEFPACKAGE);
         }
 
-        return resId != null ? getResources().getDimensionPixelSize(resId) : null;
+        return resId != 0 ? getResources().getDimensionPixelSize(resId) : null;
     }
 
     @Override

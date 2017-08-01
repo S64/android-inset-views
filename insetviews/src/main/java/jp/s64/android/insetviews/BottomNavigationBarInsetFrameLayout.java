@@ -76,7 +76,7 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
 
     @Nullable
     private Integer getBottomNavigationHeightFromResource() {
-        Integer resId;
+        int resId;
         int orientation = getResources().getConfiguration().orientation;
 
         NavigationBarUtils.NavigationBarPosition position = NavigationBarUtils.getNavigationBarPosition(
@@ -94,7 +94,7 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
             resId = getResources().getIdentifier(RES_NAVIGATION_BAR_HEIGHT_NAME, RES_NAVIGATION_BAR_HEIGHT_DEFTYPE, RES_NAVIGATION_BAR_HEIGHT_DEFPACKAGE);
         }
 
-        return resId != null ? getResources().getDimensionPixelSize(resId) : null;
+        return resId != 0 ? getResources().getDimensionPixelSize(resId) : null;
     }
 
     @Override

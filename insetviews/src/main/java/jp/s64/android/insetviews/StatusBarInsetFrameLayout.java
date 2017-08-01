@@ -59,7 +59,7 @@ public class StatusBarInsetFrameLayout extends FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if (statusBarHeight == null) {
             int resId = getResources().getIdentifier(RES_STATUS_BAR_HEIGHT_NAME, RES_STATUS_BAR_HEIGHT_DEFTYPE, RES_STATUS_BAR_HEIGHT_DEFPACKAGE);
-            if (resId > 0) {
+            if (resId != 0) {
                 statusBarHeight = getResources().getDimensionPixelSize(resId);
             }
         }
