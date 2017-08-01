@@ -28,16 +28,22 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import jp.s64.android.insetviews.util.NavigationBarHelper;
 import jp.s64.android.insetviews.util.NavigationBarUtils;
 
-public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends FrameLayout {
+public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends FrameLayout
+        implements
+        NavigationBarHelper.INavigationBarView {
 
     private static final String RES_NAVIGATION_BAR_WIDTH_NAME = "navigation_bar_width";
 
     private static final String RES_NAVIGATION_BAR_HEIGHT_DEFTYPE = "dimen";
     private static final String RES_NAVIGATION_BAR_HEIGHT_DEFPACKAGE = "android";
 
+    private final NavigationBarHelper<AbsHorizontalPositionNavigationBarInsetFrameLayout> mHelper;
+
     private Integer navigationBarWidth = null;
+    private boolean zeroIfDisabled = false;
 
     public AbsHorizontalPositionNavigationBarInsetFrameLayout(@NonNull Context context) {
         this(context, null);
@@ -49,6 +55,7 @@ public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends
 
     public AbsHorizontalPositionNavigationBarInsetFrameLayout(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mHelper = NavigationBarHelper.instantiate(this);
         ViewCompat.setOnApplyWindowInsetsListener(this, new android.support.v4.view.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
@@ -62,15 +69,22 @@ public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (navigationBarWidth == null) {
-            navigationBarWidth = getHorizontalPositionNavigationWidthFromResource();
+        if (zeroIfDisabled && !mHelper.hasNavigationBar()) {
+            setMeasuredDimension(
+                    MeasureSpec.getSize(MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY)),
+                    MeasureSpec.getSize(heightMeasureSpec)
+            );
+        } else {
+            if (navigationBarWidth == null) {
+                navigationBarWidth = getHorizontalPositionNavigationWidthFromResource();
+            }
+            int width, height;
+            {
+                width = navigationBarWidth != null ? resolveSize(navigationBarWidth, widthMeasureSpec) : MeasureSpec.getSize(widthMeasureSpec);
+                height = MeasureSpec.getSize(heightMeasureSpec);
+            }
+            setMeasuredDimension(width, height);
         }
-        int width, height;
-        {
-            width = navigationBarWidth != null ? resolveSize(navigationBarWidth, widthMeasureSpec) : View.MeasureSpec.getSize(widthMeasureSpec);
-            height = View.MeasureSpec.getSize(heightMeasureSpec);
-        }
-        setMeasuredDimension(width, height);
     }
 
     @Nullable
@@ -95,6 +109,12 @@ public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         navigationBarWidth = null;
+    }
+
+    @Override
+    public void setZeroHeightIfNavigationBarDisabled(boolean doZeroHeight) {
+        this.zeroIfDisabled = doZeroHeight;
+        requestLayout();
     }
 
     protected abstract boolean isSupportedSide(NavigationBarUtils.NavigationBarPosition position);

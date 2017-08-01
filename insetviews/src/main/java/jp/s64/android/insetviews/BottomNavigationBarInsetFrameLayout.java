@@ -28,9 +28,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import jp.s64.android.insetviews.util.NavigationBarHelper;
 import jp.s64.android.insetviews.util.NavigationBarUtils;
 
-public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
+public class BottomNavigationBarInsetFrameLayout extends FrameLayout
+        implements
+        NavigationBarHelper.INavigationBarView {
 
     private static final String RES_NAVIGATION_BAR_HEIGHT_NAME = "navigation_bar_height";
     private static final String RES_NAVIGATION_BAR_HEIGHT_NAME_LANDSCAPE = "navigation_bar_height_landscape";
@@ -38,6 +41,9 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
     private static final String RES_NAVIGATION_BAR_HEIGHT_DEFTYPE = "dimen";
     private static final String RES_NAVIGATION_BAR_HEIGHT_DEFPACKAGE = "android";
 
+    private final NavigationBarHelper<BottomNavigationBarInsetFrameLayout> mHelper;
+
+    private boolean zeroIfDisabled = false;
     private Integer navigationBarHeight = null;
 
     public BottomNavigationBarInsetFrameLayout(@NonNull Context context) {
@@ -50,6 +56,7 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
 
     public BottomNavigationBarInsetFrameLayout(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mHelper = NavigationBarHelper.instantiate(this);
         ViewCompat.setOnApplyWindowInsetsListener(this, new android.support.v4.view.OnApplyWindowInsetsListener() {
             @Override
             public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
@@ -63,15 +70,22 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (navigationBarHeight == null) {
-            navigationBarHeight = getBottomNavigationHeightFromResource();
+        if (zeroIfDisabled && !mHelper.hasNavigationBar()) {
+            setMeasuredDimension(
+                    MeasureSpec.getSize(widthMeasureSpec),
+                    MeasureSpec.getSize(MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY))
+            );
+        } else {
+            if (navigationBarHeight == null) {
+                navigationBarHeight = getBottomNavigationHeightFromResource();
+            }
+            int width, height;
+            {
+                width = MeasureSpec.getSize(widthMeasureSpec);
+                height = navigationBarHeight != null ? resolveSize(navigationBarHeight, heightMeasureSpec) : MeasureSpec.getSize(heightMeasureSpec);
+            }
+            setMeasuredDimension(width, height);
         }
-        int width, height;
-        {
-            width = MeasureSpec.getSize(widthMeasureSpec);
-            height = navigationBarHeight != null ? resolveSize(navigationBarHeight, heightMeasureSpec) : MeasureSpec.getSize(heightMeasureSpec);
-        }
-        setMeasuredDimension(width, height);
     }
 
     @Nullable
@@ -101,6 +115,12 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout {
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         navigationBarHeight = null;
+    }
+
+    @Override
+    public void setZeroHeightIfNavigationBarDisabled(boolean doZeroHeight) {
+        this.zeroIfDisabled = doZeroHeight;
+        requestLayout();
     }
 
 }
