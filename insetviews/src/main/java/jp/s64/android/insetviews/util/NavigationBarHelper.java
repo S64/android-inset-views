@@ -16,6 +16,10 @@
 
 package jp.s64.android.insetviews.util;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.view.View;
 
@@ -56,6 +60,18 @@ public class NavigationBarHelper<SELF extends View & NavigationBarHelper.INaviga
         return false;
     }
 
+    @Nullable
+    public Boolean isMultiWindow() {
+        Activity activity;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return false;
+        } else if ((activity = getActivity()) == null) {
+            return null; // unknown
+        } else {
+            return activity.isInMultiWindowMode();
+        }
+    }
+
     protected Class<?> getSystemPropertyClass() {
         try {
             return self.getContext().getClassLoader().loadClass(SYSTEM_PROP_CLASS_NAME);
@@ -82,9 +98,24 @@ public class NavigationBarHelper<SELF extends View & NavigationBarHelper.INaviga
         }
     }
 
+    @Nullable
+    protected Activity getActivity() {
+        Context current = self.getContext();
+        while (current instanceof ContextWrapper) {
+            if (current instanceof Activity) {
+                return (Activity) current;
+            }
+            current = ((ContextWrapper) current).getBaseContext();
+        }
+        return null;
+    }
+
+
     public interface INavigationBarView {
 
         void setZeroHeightIfNavigationBarDisabled(boolean doZeroHeight);
+
+        void setZeroHeightIfMultiWindow(boolean doZeroHeight);
 
     }
 

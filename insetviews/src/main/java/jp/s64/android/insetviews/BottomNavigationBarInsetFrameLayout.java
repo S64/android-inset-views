@@ -44,6 +44,7 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout
     private final NavigationBarHelper<BottomNavigationBarInsetFrameLayout> mHelper;
 
     private boolean zeroIfDisabled = false;
+    private boolean zeroIfMultiWindow = false;
     private Integer navigationBarHeight = null;
 
     public BottomNavigationBarInsetFrameLayout(@NonNull Context context) {
@@ -70,7 +71,8 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (zeroIfDisabled && !mHelper.hasNavigationBar()) {
+        Boolean isMultiWindow;
+        if ((zeroIfDisabled && !mHelper.hasNavigationBar()) || ((isMultiWindow = mHelper.isMultiWindow()) == null && zeroIfDisabled) || zeroIfMultiWindow && isMultiWindow) {
             setMeasuredDimension(
                     MeasureSpec.getSize(widthMeasureSpec),
                     MeasureSpec.getSize(MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY))
@@ -120,6 +122,12 @@ public class BottomNavigationBarInsetFrameLayout extends FrameLayout
     @Override
     public void setZeroHeightIfNavigationBarDisabled(boolean doZeroHeight) {
         this.zeroIfDisabled = doZeroHeight;
+        requestLayout();
+    }
+
+    @Override
+    public void setZeroHeightIfMultiWindow(boolean doZeroHeight) {
+        this.zeroIfMultiWindow = doZeroHeight;
         requestLayout();
     }
 

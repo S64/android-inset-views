@@ -43,6 +43,7 @@ public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends
     private final NavigationBarHelper<AbsHorizontalPositionNavigationBarInsetFrameLayout> mHelper;
 
     private Integer navigationBarWidth = null;
+    private boolean zeroIfMultiWindow = false;
     private boolean zeroIfDisabled = false;
 
     public AbsHorizontalPositionNavigationBarInsetFrameLayout(@NonNull Context context) {
@@ -69,7 +70,8 @@ public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (zeroIfDisabled && !mHelper.hasNavigationBar()) {
+        Boolean isMultiWindow;
+        if (zeroIfDisabled && !mHelper.hasNavigationBar() || ((isMultiWindow = mHelper.isMultiWindow()) == null && zeroIfDisabled) || zeroIfMultiWindow && isMultiWindow) {
             setMeasuredDimension(
                     MeasureSpec.getSize(MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY)),
                     MeasureSpec.getSize(heightMeasureSpec)
@@ -114,6 +116,12 @@ public abstract class AbsHorizontalPositionNavigationBarInsetFrameLayout extends
     @Override
     public void setZeroHeightIfNavigationBarDisabled(boolean doZeroHeight) {
         this.zeroIfDisabled = doZeroHeight;
+        requestLayout();
+    }
+
+    @Override
+    public void setZeroHeightIfMultiWindow(boolean doZeroHeight) {
+        this.zeroIfMultiWindow = doZeroHeight;
         requestLayout();
     }
 
