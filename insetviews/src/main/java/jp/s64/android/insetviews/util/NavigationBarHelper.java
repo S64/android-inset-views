@@ -32,14 +32,16 @@ public class NavigationBarHelper<SELF extends View & NavigationBarHelper.INaviga
         return new NavigationBarHelper(self);
     }
 
-    private static final String RES_NAVIGATION_BAR_ENABLED_NAME = "config_showNavigationBar";
-    private static final String RES_NAVIGATION_BAR_ENABLED_DEFTYPE = "bool";
-    private static final String RES_NAVIGATION_BAR_ENABLED_DEFPACKAGE = "android";
-
     private static final String SYSTEM_PROP_QEMU_MAINKEY_DISABLED_KEY = "qemu.hw.mainkeys";
 
     private static final String SYSTEM_PROP_CLASS_NAME = "android.os.SystemProperties";
     private static final String SYSTEM_PROP_CLASS_GET_METHOD_NAME = "get";
+
+    private static final String WINDOW_MANAGER_GLOBAL_CLASS_NAME = "android.view.WindowManagerGlobal";
+    private static final String WINDOW_MANAGER_GLOBAL_CLASS_GET_WS_METHOD_NAME = "getWindowManagerService";
+
+    private static final String I_WINDOW_MANAGER_CLASS_NAME = "android.view.IWindowManager";
+    private static final String I_WINDOW_MANAGER_CLASS_HAS_NVB_METHOD_NAME = "hasNavigationBar";
 
     private final SELF self;
 
@@ -48,16 +50,23 @@ public class NavigationBarHelper<SELF extends View & NavigationBarHelper.INaviga
     }
 
     public boolean hasNavigationBar() {
-        String qemuMainKey = getSystemProperty(SYSTEM_PROP_QEMU_MAINKEY_DISABLED_KEY);
-        if (qemuMainKey != null && qemuMainKey.equals("1")) {
-            return false;
-        } else {
-            int resId = self.getResources().getIdentifier(RES_NAVIGATION_BAR_ENABLED_NAME, RES_NAVIGATION_BAR_ENABLED_DEFTYPE, RES_NAVIGATION_BAR_ENABLED_DEFPACKAGE);
-            if (resId != 0) {
-                return self.getResources().getBoolean(resId);
+        boolean ret = false;
+
+        {
+            Boolean hasSystem = hasSystemWideNavigationBar();
+            if (hasSystem != null) {
+                ret = hasSystem;
             }
         }
-        return false;
+
+        String qemuMainKey = getSystemProperty(SYSTEM_PROP_QEMU_MAINKEY_DISABLED_KEY);
+        if ("1".equals(qemuMainKey)) {
+            ret = false;
+        } else if ("0".equals(qemuMainKey)) {
+            ret = true;
+        }
+
+        return ret;
     }
 
     @Nullable
@@ -96,6 +105,53 @@ public class NavigationBarHelper<SELF extends View & NavigationBarHelper.INaviga
         } catch (IllegalAccessException e) {
             throw new NavigationBarHelperException(e);
         }
+    }
+
+    protected Class<?> getWindowManagerGlobalClass() {
+        try {
+            return self.getContext().getClassLoader().loadClass(WINDOW_MANAGER_GLOBAL_CLASS_NAME);
+        } catch (ClassNotFoundException e) {
+            throw new NavigationBarHelperException(e);
+        }
+    }
+
+    protected Class<?> getIWindowManagerClass() {
+        try {
+            return self.getContext().getClassLoader().loadClass(I_WINDOW_MANAGER_CLASS_NAME);
+        } catch (ClassNotFoundException e) {
+            throw new NavigationBarHelperException(e);
+        }
+    }
+
+    protected Object getWindowManagerService() {
+        try {
+            Method method = getWindowManagerGlobalClass().getMethod(WINDOW_MANAGER_GLOBAL_CLASS_GET_WS_METHOD_NAME);
+            return method.invoke(null);
+        } catch (NoSuchMethodException e) {
+            throw new NavigationBarHelperException(e);
+        } catch (IllegalAccessException e) {
+            throw new NavigationBarHelperException(e);
+        } catch (InvocationTargetException e) {
+            throw new NavigationBarHelperException(e);
+        }
+    }
+
+    @Nullable
+    protected Boolean hasSystemWideNavigationBar() {
+        try {
+            Method method = getIWindowManagerClass().getDeclaredMethod(I_WINDOW_MANAGER_CLASS_HAS_NVB_METHOD_NAME);
+            Object ret = method.invoke(getWindowManagerService());
+            if (ret != null) {
+                return (boolean) ret;
+            }
+        } catch (NoSuchMethodException e) {
+            throw new NavigationBarHelperException(e);
+        } catch (IllegalAccessException e) {
+            throw new NavigationBarHelperException(e);
+        } catch (InvocationTargetException e) {
+            throw new NavigationBarHelperException(e);
+        }
+        return null;
     }
 
     @Nullable
