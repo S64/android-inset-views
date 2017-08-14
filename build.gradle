@@ -25,8 +25,8 @@ allprojects {
     }
 
     ext {
-        insetviews_version_name = '0.3.0'
-        android_version_code = 4
+        insetviews_version_name = '0.4.0'
+        android_version_code = 5
 
         artifact_group = 'jp.s64.android'
         site_url = 'https://github.com/S64/android-inset-views'
