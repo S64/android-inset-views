@@ -72,7 +72,7 @@ public class NavigationBarHelper<SELF extends View & NavigationBarHelper.INaviga
     @Nullable
     public Boolean isMultiWindow() {
         Activity activity;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             return false;
         } else if ((activity = getActivity()) == null) {
             return null; // unknown
