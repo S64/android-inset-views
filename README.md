@@ -20,7 +20,7 @@ Add following lines to your buildscripts.
 ```groovy
 buildscript {
     ext {
-        inset_views_version = '0.5.0'
+        inset_views_version = '0.6.0'
     }
 }
 ```
