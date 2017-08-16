@@ -43,6 +43,10 @@ public class NavigationBarHelper<SELF extends View & NavigationBarHelper.INaviga
     private static final String I_WINDOW_MANAGER_CLASS_NAME = "android.view.IWindowManager";
     private static final String I_WINDOW_MANAGER_CLASS_HAS_NVB_METHOD_NAME = "hasNavigationBar";
 
+    private static final String RES_NAVIGATION_BAR_ENABLED_NAME = "config_showNavigationBar";
+    private static final String RES_NAVIGATION_BAR_ENABLED_DEFTYPE = "bool";
+    private static final String RES_NAVIGATION_BAR_ENABLED_DEFPACKAGE = "android";
+
     private final SELF self;
 
     protected NavigationBarHelper(SELF self) {
@@ -52,10 +56,15 @@ public class NavigationBarHelper<SELF extends View & NavigationBarHelper.INaviga
     public boolean hasNavigationBar() {
         boolean ret = false;
 
-        {
+        try {
             Boolean hasSystem = hasSystemWideNavigationBar();
             if (hasSystem != null) {
                 ret = hasSystem;
+            }
+        } catch (NavigationBarHelperException e) {
+            int resId = self.getResources().getIdentifier(RES_NAVIGATION_BAR_ENABLED_NAME, RES_NAVIGATION_BAR_ENABLED_DEFTYPE, RES_NAVIGATION_BAR_ENABLED_DEFPACKAGE);
+            if (resId != 0) {
+                ret = self.getResources().getBoolean(resId);
             }
         }
 
